@@ -21,13 +21,13 @@ class HdrHistogramDependency(Dependency):
     def __init__(self) -> None:
         super(HdrHistogramDependency, self).__init__(
             name='HdrHistogram_c',
-            version='0.11.6',
-            url_pattern='https://github.com/HdrHistogram/HdrHistogram_c/archive/refs/tags/{0}.tar.gz',
+            version='0.11.6-yb',
+            url_pattern='https://github.com/rachelphan1508/HdrHistogram_c/archive/refs/tags/{0}.tar.gz',
             build_group=BUILD_GROUP_COMMON)
-        self.copy_sources = False
+        self.copy_sources = True
 
     def build(self, builder: BuilderInterface) -> None:
+        log_prefix = builder.log_prefix(self)
         builder.build_with_cmake(self,
-                                 ['-DCMAKE_BUILD_TYPE=Release',
-                                  '-DBUILD_SHARED_LIBS=ON',
-                                  '-DBUILD_STATIC_LIBS=ON'])
+                                 ['-DCMAKE_BUILD_TYPE=Release'])
+        builder.log_output(log_prefix, ['cp', 'include/hdr/hdr_histogram.h', builder.prefix_include])
