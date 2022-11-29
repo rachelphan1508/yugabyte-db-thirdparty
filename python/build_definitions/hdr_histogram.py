@@ -28,6 +28,15 @@ class HdrHistogramDependency(Dependency):
 
     def build(self, builder: BuilderInterface) -> None:
         log_prefix = builder.log_prefix(self)
-        builder.build_with_cmake(self,
-                                 ['-DCMAKE_BUILD_TYPE=Release'])
-        builder.log_output(log_prefix, ['cp', 'include/hdr/hdr_histogram.h', builder.prefix_include])
+        build_dir = os.path.join(os.getcwd(), "build")
+        mkdir_if_missing(build_dir)
+        builder.log_output(build_dir, 'cmake')
+        builder.build_with_cmake(self, shared_and_static=True)
+        builder.log_output(
+            log_prefix,
+            [
+                'rsync', '-av',
+                os.path.join(builder.fs_layout.get_source_path(self), 'include', 'hdr/'),
+                os.path.join(builder.prefix_include, 'hdr/')
+            ]
+        )
